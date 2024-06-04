@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head title="Driver Sim">
+
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+
+    <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+
+    <script src="https://recast-api.donmccurdy.com/aframe-inspector-plugin-recast.js" crossorigin="anonymous"></script>
+
+    <script src="game.js"></script>
+    <script src="drive.js"></script>
+
+  </head>
+
+  <body>
+
+    <!--Background-->
+    <a-scene background="color:#026F90" inspector-plugin-recast>
+
+      <!--Assets-->
+      <a-assets>
+
+        <a-asset-item id="wheel" src="./assets/steering_wheel/scene.gltf"></a-asset-item>
+        <a-asset-item id="city" src="./assets/low_poly_city/scene.gltf"></a-asset-item>
+        <a-asset-item id="collider" src="./assets/navmesh.gltf"></a-asset-item>
+        <audio id="drive" src="./assets/sounds/Sports-Car-Driving-Soft-www.fesliyanstudios.com.mp3"></audio>
+  
+      </a-assets>
+
+      <!--Sounds-->
+      <a-entity id="sound1" sound="src : #drive; poolSize : 2; autoplay : false; volume : 10; loop : false"></a-entity>
+
+      <!--Lights-->
+      <a-entity light="type : ambient; color : white; intensity : 1.5"></a-entity>
+      <a-entity light="type : directional; color : #a4a4aa; intensity : 0.6; position : 0 15 20"></a-entity>
+
+      <!--Cityscape-->
+      <a-entity id="citySet" gltf-model="#city" position="10 -2.63754 -150" rotation="0 90 0" scale="1 1 1"></a-entity>
+
+      <!--Boundaries-->
+      <a-box id="b1" material="height : 400; metalness : 0.34;" color="red" 
+      geometry="depth: 400; height : 50; width : 5" position="-76.79446 -8.30764 -164.16795"></a-box>
+
+      <a-box id="b2" material="height : 400; metalness : 0.34;" color="red" 
+      geometry="depth: 400; height : 50; width : 5" position="-75.38341 -8.30764 -164.16795"></a-box>
+
+      <a-box id="b3" material="height : 400; metalness : 0.34;" color="red" 
+      geometry="depth: 5; height : 50; width : 200" position="-0.33183 -7.8421 -359.48732"></a-box>
+
+      <a-box id="b4" material="height : 400; metalness : 0.34;" color="red" 
+      geometry="depth: 5; height : 50; width : 200" position="-0.33183 -7.8421 31.16964"></a-box>
+
+      <!--Ground-->
+      <a-plane id="ground" geometry="height : 400; width : 200; depth : 10" repeat="5 5"
+      position="0 -10 -163.73258" rotation="-90 0 0" color="yellow" visible="false"></a-plane>
+
+      <!--Navigation Mesh-->
+      <a-entity id="navmesh" gltf-model="#collider" position="0 10 0" visible="false" nav-mesh></a-entity>
+
+      <!--Camera-->
+      <a-entity id="cameraRig" look-controls camera position="0 1 5" drive game="play"
+      movement-controls="speed : 0.5; constrainToNavMesh : true" position="0 1 5" rotation="0 0 0">
+
+        <!--Look-->
+        <a-entity id="camera" camera position="0 1.6 0" rotation="0 0 0" 
+        look-controls="pointerLockEnabled : false"></a-entity>
+
+        <!--Steering Wheel-->
+        <!--a-entity id="controlWheel" gltf-model="#wheel" position="0.13 -0.120 -0.163" rotation="0 0 0"
+        scale="0.01 0.01 0.01"-->
+
+        <a-entity id="controlWheel" gltf-model="#wheel" position="0 1.575 -0.03" rotation="0 0 0"
+        scale="0.0005 0.0005 0.0005">
+
+        </a-entity>
+
+        <!--Brakes-->
+        <a-box id="controlBrakes" src="./assets/break.png" color="gray" position="-0.42593 1.35 -0.37136"
+        rotation="0 0 0" scale="0.05 0.05 0.001">
+        </a-box>
+
+        <!--Acceleration-->
+        <a-box id="controlAccel" src="./assets/acc.png" color="gray" position="-0.289 1.35 -0.37136" 
+        rotation="0 0 0" scale="0.05 0.1 0.001">
+        </a-box>
+
+        <!--Timer-->
+        <a-entity id="timer" position="0 5 -7.1" 
+        text="font: kelsonsans; align: center; width: 10; color: black; value: 00:00">
+        </a-entity>
+
+        <!--Speed-->
+        <a-entity id="speed" position="4 -5 -7.16344"
+         text="font: kelsonsans; width: 10; height: 5; value: 10">
+          <a-entity id="unit" position="1 0 0" text="font: kelsonsans; width: 10; height: 5; value: km/h"></a-entity>
+        </a-entity>
+
+        <!--Controls-->
+        <a-entity id="move" position="-3.8 -5.7 -7.16344"
+        text="font: kelsonsans; width: 5; height: 2; value:'Up-Arrow Key'">
+        </a-entity>
+
+        <a-entity id="stop" position="-6.5 -5.7 -7.16344"
+        text="font: kelsonsans; width: 5; height: 2; value:'Spacebar Key'">
+        </a-entity>
+
+        <!--Game Over-->
+        <a-entity id="over" position="1.945 2.5 -3"
+        text="font: kelsonsans; color: red; width: 5; height: 5; value:'Try Again!'" visible="false" >
+
+         </a-entity>
+      </a-entity>
+
+      </a-entity>    
+
+     
+
+    </a-scene>
+  </body>
+</html>
